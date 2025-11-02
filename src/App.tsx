@@ -450,7 +450,20 @@ function App() {
                 </p>
                 <div>
                   <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Palette summary</h3>
-                  <p className="mt-3 text-lg font-medium text-slate-100">{paletteSummary}</p>
+                  <div className="mt-3 flex items-center gap-3 flex-wrap">
+                    <div className="flex gap-1.5">
+                      {palette.map((color, index) => (
+                        <div
+                          key={color.id}
+                          className="w-8 h-8 rounded-lg border-2 border-white/10 shadow-sm flex-shrink-0 cursor-pointer transition-transform hover:scale-110"
+                          style={{ background: color.hex }}
+                          onClick={() => handleCopy(color.hex)}
+                          title={color.hex}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-lg font-medium text-slate-100">{paletteSummary}</p>
+                  </div>
                 </div>
               </div>
 
@@ -593,8 +606,8 @@ function App() {
         </div>
       )}
 
-      <footer className="border-t border-white/5 bg-slate-950/90 py-6 text-center text-xs text-slate-500">
-        Crafted with 🧪 gradients & harmonies. Shareable URL ready for your next pitch.
+      <footer className="border-t border-slate-800 bg-slate-900/80 py-4 text-center text-xs text-slate-500">
+        <p>&copy; {new Date().getFullYear()} Amer Kovacevic All rights reserved.</p>
       </footer>
     </div>
   );
