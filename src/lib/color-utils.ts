@@ -42,10 +42,38 @@ function ensureHsl(hex: string) {
 
 function buildPaletteFromHues(baseHex: string, hues: number[], adjustLightness = 0) {
   const base = ensureHsl(baseHex);
+  // Extract hue and saturation from base, but use a well-distributed lightness range
+  const baseHue = base?.h ?? 0;
+  const baseSaturation = clamp(base?.s ?? 0.6, 0.4, 0.9);
+  
+  // Use a dynamic lightness range centered around the base but ensure good spread
+  const baseLightness = clamp(base?.l ?? 0.5, 0.25, 0.75);
+  // Create a lightness range that spans from lighter to darker
+  const lightnessRange = 0.4; // Total range of lightness variation
+  const minLightness = Math.max(0.25, baseLightness - lightnessRange / 2);
+  const maxLightness = Math.min(0.85, baseLightness + lightnessRange / 2);
+  
   return hues.map((offset, index) => {
-    const h = wrapHue((base?.h ?? 0) + offset);
-    const s = clamp((base?.s ?? 0.6) + (index - hues.length / 2) * 0.02, 0.25, 0.95);
-    const l = clamp((base?.l ?? 0.55) + adjustLightness * (index - hues.length / 2), 0.25, 0.85);
+    const h = wrapHue(baseHue + offset);
+    // Vary saturation slightly across the palette for visual interest
+    const s = clamp(baseSaturation + (index - hues.length / 2) * 0.05, 0.35, 0.95);
+    
+    // Distribute lightness across the range for this palette
+    // Create a smooth distribution from min to max
+    const lightnessPosition = hues.length > 1 ? index / (hues.length - 1) : 0.5;
+    
+    // Apply adjustLightness parameter on top of the base distribution
+    let l;
+    if (adjustLightness !== 0) {
+      // When adjustLightness is specified, use it to create variation
+      const baseDistributedL = minLightness + (maxLightness - minLightness) * lightnessPosition;
+      const variation = adjustLightness * (index - hues.length / 2);
+      l = clamp(baseDistributedL + variation, 0.25, 0.85);
+    } else {
+      // Even distribution across the lightness range
+      l = minLightness + (maxLightness - minLightness) * lightnessPosition;
+    }
+    
     return formatHex({ mode: 'hsl', h, s, l });
   });
 }
@@ -64,25 +92,73 @@ export function generatePaletteByMode(baseHex: string, mode: PaletteMode, length
   const base = normalizeHex(baseHex);
   switch (mode) {
     case 'complementary': {
-      const complement = buildPaletteFromHues(base, [0, 180], 0).slice(0, 2);
-      const derived = [lighten(base, -1), base, lighten(base, 1), complement[1], lighten(complement[1], 1)];
-      return derived.slice(0, length);
+      // Generate complementary palette: base color + its complement with variations
+      // Create a palette that alternates between base hue and complement hue with good distribution
+      const baseHsl = ensureHsl(base);
+      const baseHue = baseHsl?.h ?? 0;
+      
+      // Build hues array alternating between base (0°) and complement (180°)
+      const hues: number[] = [];
+      for (let i = 0; i < length; i++) {
+        // Alternate: even indices = base hue, odd indices = complement hue
+        hues.push(i % 2 === 0 ? 0 : 180);
+      }
+      
+      // Use buildPaletteFromHues which will create proper lightness distribution
+      return buildPaletteFromHues(base, hues, 0.06);
     }
     case 'analogous': {
-      const hues = [-40, -20, 0, 20, 40, 60];
-      return buildPaletteFromHues(base, hues.slice(0, length), 0.04);
+      // Generate analogous colors: neighboring hues with continuous variations
+      // Support unlimited colors by continuing the sequence
+      const baseStep = 20; // Step size for analogous hues
+      const hues: number[] = [];
+      const startOffset = -40; // Start from -40° (left of base)
+      for (let i = 0; i < length; i++) {
+        hues.push(startOffset + i * baseStep);
+      }
+      return buildPaletteFromHues(base, hues, 0.04);
     }
     case 'triadic': {
-      const hues = [0, 120, 240, 120 + 20, 240 + 20];
-      return buildPaletteFromHues(base, hues.slice(0, length), 0.05);
+      // Generate triadic colors: base + two 120° shifts, with variations
+      // Support up to 12 colors by adding lightness variations
+      const baseHues = [0, 120, 240];
+      const variations = [0, 20, -20, 40, -40];
+      const hues: number[] = [];
+      for (let i = 0; i < length; i++) {
+        const baseIndex = i % 3;
+        const variationIndex = Math.floor(i / 3);
+        const hue = baseHues[baseIndex] + (variations[variationIndex] || 0);
+        hues.push(hue);
+      }
+      return buildPaletteFromHues(base, hues, 0.05);
     }
     case 'tetradic': {
-      const hues = [0, 90, 180, 270, 45];
-      return buildPaletteFromHues(base, hues.slice(0, length), 0.03);
+      // Generate tetradic colors: four corners (0°, 90°, 180°, 270°) with variations
+      // Support unlimited colors by cycling through corners with variations
+      const baseHues = [0, 90, 180, 270];
+      const variations = [0, 15, -15, 30, -30, 45];
+      const hues: number[] = [];
+      for (let i = 0; i < length; i++) {
+        const baseIndex = i % 4;
+        const variationIndex = Math.floor(i / 4);
+        const hue = baseHues[baseIndex] + (variations[variationIndex] || 0);
+        hues.push(hue);
+      }
+      return buildPaletteFromHues(base, hues, 0.03);
     }
     case 'split': {
-      const hues = [0, 150, 210, 150 + 20, 210 + 20];
-      return buildPaletteFromHues(base, hues.slice(0, length), 0.05);
+      // Generate split-complementary colors: base + two splits (150° and 210° from complement)
+      // Support unlimited colors by adding variations
+      const baseHues = [0, 150, 210]; // Base color, split-complement 1, split-complement 2
+      const variations = [0, 20, -20, 40, -40, 10, -10];
+      const hues: number[] = [];
+      for (let i = 0; i < length; i++) {
+        const baseIndex = i % 3;
+        const variationIndex = Math.floor(i / 3);
+        const hue = baseHues[baseIndex] + (variations[variationIndex] || 0);
+        hues.push(hue);
+      }
+      return buildPaletteFromHues(base, hues, 0.05);
     }
     case 'gradient': {
       return Array.from({ length }, () => base);

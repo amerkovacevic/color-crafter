@@ -1,59 +1,38 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { User } from 'firebase/auth';
 import { PaletteSwatch } from './components/PaletteSwatch';
+import { TrendingPalettes } from './components/TrendingPalettes';
 import {
   createColorId,
-  generateGradientPalette,
-  generatePaletteByMode,
   normalizeHex,
   randomPleasantHex
 } from './lib/color-utils';
-import { googleSignIn, listenToAuth, logOut } from './lib/firebase';
-import type { ColorInfoMode, PaletteColor, PaletteMode } from './types';
+import { googleSignIn, listenToAuth, logOut, getFirebase } from './lib/firebase';
+import type { ColorInfoMode, PaletteColor } from './types';
 import { usePaletteStorage } from './hooks/usePaletteStorage';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const DEFAULT_HEXES = ['#0f172a', '#0f766e', '#14b8a6', '#38bdf8', '#f472b6'];
 
-const MODE_OPTIONS: { value: PaletteMode; label: string; description: string }[] = [
-  { value: 'random', label: 'Random Muse', description: 'Pleasing random colours tuned for balanced palettes.' },
-  { value: 'complementary', label: 'Complementary', description: 'Opposites attract with subtle lightness offsets.' },
-  { value: 'analogous', label: 'Analogous', description: 'Neighbouring hues for flowing gradients.' },
-  { value: 'triadic', label: 'Triadic', description: 'Three evenly spaced hues with accent tints.' },
-  { value: 'tetradic', label: 'Tetradic', description: 'Four-corner harmony for bold compositions.' },
-  { value: 'split', label: 'Split-Complementary', description: 'Balanced contrast with softened complements.' },
-  { value: 'gradient', label: 'Gradient', description: 'Interpolate between two anchors in OKLCH space.' }
-];
 
-function createPaletteFromHexes(hexes: string[]): PaletteColor[] {
+export function createPaletteFromHexes(hexes: string[]): PaletteColor[] {
   return hexes.map((hex) => ({ id: createColorId(), hex: normalizeHex(hex), locked: false }));
 }
 
 function parsePaletteFromUrl(): {
   palette: PaletteColor[];
-  mode: PaletteMode;
   infoMode: ColorInfoMode;
-  gradientStart: string;
-  gradientEnd: string;
-  gradientSteps: number;
 } {
   if (typeof window === 'undefined') {
     return {
       palette: createPaletteFromHexes(DEFAULT_HEXES),
-      mode: 'random',
-      infoMode: 'hsl',
-      gradientStart: '#2563eb',
-      gradientEnd: '#f97316',
-      gradientSteps: 5
+      infoMode: 'hsl'
     };
   }
 
   const params = new URLSearchParams(window.location.search);
   const colorsParam = params.get('colors');
-  const modeParam = params.get('mode');
   const infoParam = params.get('info');
-  const gradientParam = params.get('gradient');
-
-  const parsedMode = MODE_OPTIONS.find((option) => option.value === modeParam)?.value ?? 'random';
   const parsedInfo = infoParam === 'oklch' ? 'oklch' : 'hsl';
 
   let palette = createPaletteFromHexes(DEFAULT_HEXES);
@@ -68,36 +47,20 @@ function parsePaletteFromUrl(): {
     }
   }
 
-  let gradientStart = '#2563eb';
-  let gradientEnd = '#f97316';
-  let gradientSteps = 5;
-  if (gradientParam) {
-    const [start, end, steps] = gradientParam.split('_');
-    if (start) gradientStart = `#${start.replace('#', '')}`;
-    if (end) gradientEnd = `#${end.replace('#', '')}`;
-    const parsedSteps = Number.parseInt(steps ?? '5', 10);
-    if (!Number.isNaN(parsedSteps) && parsedSteps > 1 && parsedSteps < 12) {
-      gradientSteps = parsedSteps;
-    }
-  }
-
-  return { palette, mode: parsedMode, infoMode: parsedInfo, gradientStart, gradientEnd, gradientSteps };
+  return { palette, infoMode: parsedInfo };
 }
 
 function App() {
   const initialState = useMemo(() => parsePaletteFromUrl(), []);
   const [palette, setPalette] = useState<PaletteColor[]>(initialState.palette);
-  const [mode, setMode] = useState<PaletteMode>(initialState.mode);
   const [infoMode, setInfoMode] = useState<ColorInfoMode>(initialState.infoMode);
-  const [gradientStart, setGradientStart] = useState(initialState.gradientStart);
-  const [gradientEnd, setGradientEnd] = useState(initialState.gradientEnd);
-  const [gradientSteps, setGradientSteps] = useState(initialState.gradientSteps);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [paletteName, setPaletteName] = useState('Untitled Harmony');
   const [projectName, setProjectName] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [generatorBusy, setGeneratorBusy] = useState(false);
+  const [currentPage, setCurrentPage] = useState<'generator' | 'trending'>('generator');
 
   useEffect(() => {
     return listenToAuth(setUser);
@@ -110,63 +73,41 @@ function App() {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams();
     params.set('colors', palette.map((color) => color.hex.replace('#', '')).join('-'));
-    params.set('mode', mode);
     params.set('info', infoMode);
-    if (mode === 'gradient') {
-      params.set(
-        'gradient',
-        `${gradientStart.replace('#', '')}_${gradientEnd.replace('#', '')}_${gradientSteps.toString()}`
-      );
-    }
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState(null, '', newUrl);
-  }, [palette, mode, infoMode, gradientStart, gradientEnd, gradientSteps]);
+  }, [palette, infoMode]);
 
-  const targetLength = mode === 'gradient' ? gradientSteps : palette.length || 5;
+  const generatePalette = useCallback(() => {
+    const length = palette.length || 5;
 
-  const generatePalette = useCallback(
-    (nextMode?: PaletteMode) => {
-      const activeMode = nextMode ?? mode;
-      const length = activeMode === 'gradient' ? gradientSteps : targetLength;
-      const baseColor = palette.find((color) => color.locked)?.hex ?? palette[0]?.hex ?? randomPleasantHex();
+    setGeneratorBusy(true);
+    const runner = typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function'
+      ? window.requestAnimationFrame.bind(window)
+      : (fn: FrameRequestCallback) =>
+          setTimeout(() => fn(typeof performance !== 'undefined' ? performance.now() : Date.now()), 0);
 
-      setGeneratorBusy(true);
-      const runner = typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function'
-        ? window.requestAnimationFrame.bind(window)
-        : (fn: FrameRequestCallback) =>
-            setTimeout(() => fn(typeof performance !== 'undefined' ? performance.now() : Date.now()), 0);
+    runner(() => {
+      // Always generate random colors
+      const generatedColors = Array.from({ length }, () => randomPleasantHex());
 
-      runner(() => {
-        const generatedColors =
-          activeMode === 'gradient'
-            ? generateGradientPalette(gradientStart, gradientEnd, length)
-            : generatePaletteByMode(baseColor, activeMode, length);
-
-        const nextPalette: PaletteColor[] = Array.from({ length }, (_, index) => {
-          const existing = palette[index];
-          const candidate = generatedColors[index % generatedColors.length] ?? randomPleasantHex();
-          if (existing && existing.locked) {
-            return existing;
-          }
-          return {
-            id: existing?.id ?? createColorId(),
-            hex: candidate,
-            locked: existing?.locked ?? false
-          };
-        });
-
-        setPalette(nextPalette);
-        setGeneratorBusy(false);
+      const nextPalette: PaletteColor[] = Array.from({ length }, (_, index) => {
+        const existing = palette[index];
+        const candidate = generatedColors[index] ?? randomPleasantHex();
+        if (existing && existing.locked) {
+          return existing;
+        }
+        return {
+          id: existing?.id ?? createColorId(),
+          hex: candidate,
+          locked: existing?.locked ?? false
+        };
       });
-    },
-    [gradientEnd, gradientStart, gradientSteps, mode, palette, targetLength]
-  );
 
-  useEffect(() => {
-    if (mode === 'gradient') {
-      generatePalette('gradient');
-    }
-  }, [mode, gradientStart, gradientEnd, gradientSteps, generatePalette]);
+      setPalette(nextPalette);
+      setGeneratorBusy(false);
+    });
+  }, [palette]);
 
   const handleCopy = useCallback((hex: string) => {
     if (typeof navigator === 'undefined') return;
@@ -227,7 +168,7 @@ function App() {
         project: projectName || undefined,
         tags,
         colors: palette.map((color) => color.hex),
-        mode
+        mode: 'random'
       });
       setPaletteName('Untitled Harmony');
       setProjectName('');
@@ -242,7 +183,52 @@ function App() {
     }
   };
 
-  const firebaseReady = typeof window !== 'undefined' && Boolean(import.meta.env.VITE_FIREBASE_API_KEY);
+  const handleSharePalette = async () => {
+    if (!user) {
+      alert('Please sign in to share palettes');
+      return;
+    }
+
+    const firebase = getFirebase();
+    if (!firebase) {
+      setCopySuccess('Firebase is not configured');
+      setTimeout(() => setCopySuccess(null), 3000);
+      return;
+    }
+
+    try {
+      const { db } = firebase;
+      await addDoc(collection(db, 'colorCrafter_sharedPalettes'), {
+        name: paletteName || 'Untitled Harmony',
+        colors: palette.map((color) => color.hex),
+        userId: user.uid,
+        userName: user.displayName || user.email || 'Anonymous',
+        userPhotoURL: user.photoURL || undefined,
+        upvotes: 0,
+        downvotes: 0,
+        upvotedBy: [],
+        downvotedBy: [],
+        viewCount: 0,
+        createdAt: serverTimestamp()
+      });
+      setCopySuccess('Palette shared to Trending ✨');
+      setTimeout(() => setCopySuccess(null), 3000);
+    } catch (error: any) {
+      console.error('Share palette error:', error);
+      const errorMessage = error?.message || 'Unable to share palette';
+      setCopySuccess(errorMessage);
+      setTimeout(() => setCopySuccess(null), 4000);
+    }
+  };
+
+  const handleLoadPalette = useCallback((colors: string[]) => {
+    const loadedPalette = createPaletteFromHexes(colors);
+    setPalette(loadedPalette);
+    setCurrentPage('generator');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const firebaseReady = typeof window !== 'undefined' && Boolean((import.meta as any).env?.VITE_FIREBASE_API_KEY);
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
@@ -251,20 +237,49 @@ function App() {
           <p className="font-display text-2xl font-semibold tracking-tight text-white">Color Crafter</p>
           <span className="hidden text-xs uppercase tracking-[0.35em] text-slate-400 sm:inline">Palette Studio</span>
         </div>
-        <div className="flex items-center gap-3 text-sm">
-          {user ? (
-            <>
-              <span className="hidden text-slate-300 sm:inline">{user.displayName ?? user.email}</span>
-              <button onClick={logOut} className="button-secondary">Sign out</button>
-            </>
-          ) : (
-            <button onClick={googleSignIn} className="button-primary">
-              Sign in with Google
+        <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage('generator')}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                currentPage === 'generator'
+                  ? 'bg-teal-500/20 text-teal-300'
+                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              Generator
             </button>
-          )}
+            <button
+              type="button"
+              onClick={() => setCurrentPage('trending')}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                currentPage === 'trending'
+                  ? 'bg-teal-500/20 text-teal-300'
+                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              Trending
+            </button>
+          </nav>
+          <div className="flex items-center gap-3 text-sm">
+            {user ? (
+              <>
+                <span className="hidden text-slate-300 sm:inline">{user.displayName ?? user.email}</span>
+                <button onClick={logOut} className="button-secondary">Sign out</button>
+              </>
+            ) : (
+              <button onClick={googleSignIn} className="button-primary">
+                Sign in with Google
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
+      {currentPage === 'trending' ? (
+        <TrendingPalettes onLoadPalette={handleLoadPalette} user={user} />
+      ) : (
       <main className="flex flex-1 flex-col">
         <section className="flex flex-1 flex-col">
           <div className="flex flex-1 flex-col overflow-hidden">
@@ -295,30 +310,13 @@ function App() {
                 <p className="text-sm text-slate-300">Lock favourites, remix harmonies, share in a heartbeat.</p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
-                <select
-                  value={mode}
-                  onChange={(event) => {
-                    const value = event.target.value as PaletteMode;
-                    setMode(value);
-                    if (value !== 'gradient') {
-                      generatePalette(value);
-                    }
-                  }}
-                  className="rounded-full border border-white/10 bg-slate-900/70 px-4 py-2 text-sm font-medium text-slate-100 focus:border-teal-400 focus:outline-none"
-                >
-                  {MODE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
                 <button
                   type="button"
                   onClick={() => generatePalette()}
                   className="button-primary"
                   disabled={generatorBusy}
                 >
-                  {generatorBusy ? 'Mixing…' : 'Regenerate'}
+                  Generate Palette
                 </button>
               </div>
             </div>
@@ -326,41 +324,8 @@ function App() {
             <div className="grid gap-10 lg:grid-cols-[3fr,2fr]">
               <div className="space-y-8">
                 <p className="text-sm text-slate-300">
-                  {MODE_OPTIONS.find((option) => option.value === mode)?.description}
+                  Generate pleasing random colors tuned for balanced palettes. Lock your favorites and regenerate to discover new harmonies.
                 </p>
-                {mode === 'gradient' && (
-                  <div className="grid gap-6 sm:grid-cols-3">
-                    <label className="flex flex-col gap-2 text-sm">
-                      <span className="text-slate-300">Start colour</span>
-                      <input
-                        type="color"
-                        value={gradientStart}
-                        onChange={(event) => setGradientStart(event.target.value)}
-                        className="h-14 w-full cursor-pointer rounded-2xl border border-white/10 bg-slate-900/60"
-                      />
-                    </label>
-                    <label className="flex flex-col gap-2 text-sm">
-                      <span className="text-slate-300">End colour</span>
-                      <input
-                        type="color"
-                        value={gradientEnd}
-                        onChange={(event) => setGradientEnd(event.target.value)}
-                        className="h-14 w-full cursor-pointer rounded-2xl border border-white/10 bg-slate-900/60"
-                      />
-                    </label>
-                    <label className="flex flex-col gap-2 text-sm">
-                      <span className="text-slate-300">Steps</span>
-                      <input
-                        type="range"
-                        min={3}
-                        max={10}
-                        value={gradientSteps}
-                        onChange={(event) => setGradientSteps(Number(event.target.value))}
-                      />
-                      <span className="text-xs text-slate-400">{gradientSteps} swatches</span>
-                    </label>
-                  </div>
-                )}
                 <div>
                   <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Palette summary</h3>
                   <p className="mt-3 text-lg font-medium text-slate-100">{paletteSummary}</p>
@@ -399,13 +364,22 @@ function App() {
                       />
                     </label>
                   </div>
-                  <button
-                    onClick={handleSavePalette}
-                    className="button-primary"
-                    disabled={!user || !firebaseReady}
-                  >
-                    {firebaseReady ? (user ? 'Save palette' : 'Sign in to save') : 'Add Firebase config to enable saves'}
-                  </button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={handleSavePalette}
+                      className="button-primary"
+                      disabled={!user || !firebaseReady}
+                    >
+                      {firebaseReady ? (user ? 'Save' : 'Sign in') : 'No Firebase'}
+                    </button>
+                    <button
+                      onClick={handleSharePalette}
+                      className="button-secondary"
+                      disabled={!user || !firebaseReady}
+                    >
+                      Share
+                    </button>
+                  </div>
                   {!firebaseReady && (
                     <p className="text-xs text-amber-300">
                       Firebase configuration missing. Copy <code>.env.example</code> to <code>.env</code> and add your credentials.
@@ -428,17 +402,27 @@ function App() {
                       {savedPalettes.map((saved) => (
                         <article
                           key={saved.id}
-                          className="group rounded-2xl border border-white/10 bg-slate-950/70 p-4 transition hover:border-teal-400/60"
+                          className="group cursor-pointer rounded-2xl border border-white/10 bg-slate-950/70 p-4 transition hover:border-teal-400/60"
+                          onClick={() => {
+                            // Load saved palette
+                            const loadedPalette = createPaletteFromHexes(saved.colors);
+                            setPalette(loadedPalette);
+                            // Scroll to top to show the palette
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
                         >
                           <div className="flex items-center justify-between gap-4">
-                            <div>
+                            <div className="flex-1">
                               <h4 className="font-semibold text-white">{saved.name}</h4>
                               {saved.project && <p className="text-xs uppercase tracking-wide text-slate-400">{saved.project}</p>}
                             </div>
                             <button
                               type="button"
                               className="button-secondary text-xs"
-                              onClick={() => deletePaletteById(saved.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deletePaletteById(saved.id);
+                              }}
                             >
                               Delete
                             </button>
@@ -473,6 +457,7 @@ function App() {
           </div>
         </section>
       </main>
+      )}
 
       {copySuccess && (
         <div className="pointer-events-none fixed inset-x-0 bottom-6 flex justify-center">
