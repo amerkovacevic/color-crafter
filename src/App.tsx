@@ -17,7 +17,9 @@ const DEFAULT_HEXES = ['#0f172a', '#0f766e', '#14b8a6', '#38bdf8', '#f472b6'];
 
 
 export function createPaletteFromHexes(hexes: string[]): PaletteColor[] {
-  return hexes.map((hex) => ({ id: createColorId(), hex: normalizeHex(hex), locked: false }));
+  // Limit to maximum 6 colors
+  const limitedHexes = hexes.slice(0, 6);
+  return limitedHexes.map((hex) => ({ id: createColorId(), hex: normalizeHex(hex), locked: false }));
 }
 
 function parsePaletteFromUrl(): {
@@ -80,7 +82,7 @@ function App() {
   }, [palette, infoMode]);
 
   const generatePalette = useCallback(() => {
-    const length = palette.length || 5;
+    const length = Math.min(palette.length || 5, 6); // Maximum 6 swatches
 
     setGeneratorBusy(true);
     const runner = typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function'
@@ -103,7 +105,7 @@ function App() {
           hex: candidate,
           locked: existing?.locked ?? false
         };
-      });
+      }).slice(0, 6); // Limit to maximum 6 swatches
 
       setPalette(nextPalette);
       setGeneratorBusy(false);
@@ -132,6 +134,10 @@ function App() {
   const insertAfter = useCallback(
     (index: number) => {
       setPalette((current) => {
+        // Maximum of 6 swatches allowed
+        if (current.length >= 6) {
+          return current;
+        }
         const next = [...current];
         next.splice(index + 1, 0, { id: createColorId(), hex: randomPleasantHex(), locked: false });
         return next;
@@ -252,7 +258,6 @@ function App() {
       <header className="flex h-16 items-center justify-between border-b border-white/10 bg-slate-950/90 px-6 backdrop-blur sm:px-10">
         <div className="flex items-baseline gap-4">
           <p className="font-display text-2xl font-semibold tracking-tight text-white">Color Crafter</p>
-          <span className="hidden text-xs uppercase tracking-[0.35em] text-slate-400 sm:inline">Palette Studio</span>
         </div>
         <div className="flex items-center gap-4">
           <nav className="flex items-center gap-2">
@@ -326,6 +331,7 @@ function App() {
                   onDelete={deleteAt}
                   onInsert={insertAfter}
                   onHexChange={updateHex}
+                  maxSwatchesReached={palette.length >= 6}
                 />
               ))}
             </div>

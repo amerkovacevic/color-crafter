@@ -78,44 +78,44 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
-      <div className="flex h-16 items-center justify-between border-b border-white/10 bg-slate-950/90 px-6 backdrop-blur sm:px-10">
-        <p className="font-display text-2xl font-semibold tracking-tight text-white">Craft Visualizer</p>
-        <div className="flex gap-2 bg-slate-800/50 p-1 rounded-lg">
+      <div className="flex h-16 items-center justify-between border-b border-white/10 bg-slate-950/90 px-4 sm:px-6 lg:px-10 backdrop-blur">
+        <p className="font-display text-lg sm:text-xl lg:text-2xl font-semibold tracking-tight text-white truncate">Craft Visualizer</p>
+        <div className="flex gap-1 sm:gap-2 bg-slate-800/50 p-1 rounded-lg">
           <button
             onClick={() => setActiveView('dashboard')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            className={`px-2 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
               activeView === 'dashboard'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            CRM Dashboard
+            <span className="hidden sm:inline">CRM </span>Dashboard
           </button>
           <button
             onClick={() => setActiveView('learning')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            className={`px-2 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
               activeView === 'learning'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            Learning Academy
+            <span className="hidden sm:inline">Learning </span>Academy
           </button>
           <button
             onClick={() => setActiveView('mobile')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+            className={`px-2 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
               activeView === 'mobile'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-300 hover:text-white'
             }`}
           >
-            Mobile App
+            <span className="hidden sm:inline">Mobile </span>App
           </button>
         </div>
       </div>
 
       {/* Floating Generate Button & Palette Viewer */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3">
         {showPaletteViewer && (
           <div className="rounded-2xl border border-white/20 bg-slate-900/95 backdrop-blur-md p-4 shadow-2xl">
             <div className="flex gap-2 mb-3">
@@ -150,7 +150,7 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
         )}
         <button
           onClick={() => setShowPaletteViewer(!showPaletteViewer)}
-          className="h-14 w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-xl transition-all hover:scale-110 hover:shadow-teal-500/50"
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl transition-all hover:scale-110 hover:shadow-teal-500/50"
           style={{ background: colorMap.primary }}
           title="View Palette"
         >
@@ -158,7 +158,7 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
         </button>
         <button
           onClick={handleGenerateNew}
-          className="h-14 w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-xl transition-all hover:scale-110 hover:shadow-teal-500/50"
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl transition-all hover:scale-110 hover:shadow-teal-500/50"
           style={{ background: colorMap.accent }}
           title="Generate New Palette"
         >
@@ -170,7 +170,7 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
         {activeView === 'dashboard' ? (
           <>
             {/* Sidebar */}
-            <aside className="w-64 flex-shrink-0 border-r bg-white border-gray-200">
+            <aside className="hidden lg:block w-64 flex-shrink-0 border-r bg-white border-gray-200">
           <div className="p-6">
             <div className="mb-8">
               <div className="h-8 w-32 rounded mb-2" style={{ background: colorMap.primary }} />
@@ -221,29 +221,29 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
         {/* Main Content - White Background */}
         <div className="flex-1 flex flex-col overflow-hidden bg-white">
           {/* Top Bar */}
-          <header className="h-16 border-b flex items-center justify-between px-6 bg-white border-gray-200">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-              <div className="px-3 py-1 rounded-full text-xs font-medium text-white" style={{ background: colorMap.accent }}>
+          <header className="h-16 border-b flex items-center justify-between px-4 sm:px-6 bg-white border-gray-200">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Dashboard</h1>
+              <div className="px-2 sm:px-3 py-1 rounded-full text-xs font-medium text-white" style={{ background: colorMap.accent }}>
                 Live
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-64 rounded-lg border border-gray-300 flex items-center gap-2 px-3 bg-white">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden sm:flex h-9 w-32 lg:w-64 rounded-lg border border-gray-300 items-center gap-2 px-3 bg-white">
                 <div className="h-4 w-4 rounded" style={{ background: colorMap.accent, opacity: 0.3 }} />
-                <div className="h-3 w-32 rounded bg-gray-200" />
+                <div className="h-3 w-20 lg:w-32 rounded bg-gray-200" />
               </div>
               <div className="relative">
-                <div className="h-10 w-10 rounded-full" style={{ background: colorMap.secondary }} />
-                <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full border-2 border-white" style={{ background: colorMap.success }} />
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full" style={{ background: colorMap.secondary }} />
+                <div className="absolute -top-1 -right-1 h-3 w-3 sm:h-4 sm:w-4 rounded-full border-2 border-white" style={{ background: colorMap.success }} />
               </div>
             </div>
           </header>
 
           {/* Dashboard Content - White Background */}
-          <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
               {[
                 { label: 'Current MRR', value: '$12.4k', change: '+12.5%', trend: 'up', color: colorMap.cardAccent1 },
                 { label: 'Current Customers', value: '16,601', change: '+8.2%', trend: 'up', color: colorMap.cardAccent2 },
@@ -283,10 +283,10 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
               ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
               {/* Color Palette Showcase */}
-              <div className="rounded-xl p-6 shadow-sm border border-gray-200 bg-white">
-                <div className="flex items-center justify-between mb-6">
+              <div className="rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 bg-white">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
                   <div className="h-6 w-32 rounded bg-gray-800" />
                   <div className="flex gap-1">
                     {colors.map((color, i) => (
@@ -360,8 +360,8 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
               </div>
 
               {/* Transactions List */}
-              <div className="lg:col-span-2 rounded-xl p-6 shadow-sm border border-gray-200 bg-white">
-                <div className="flex items-center justify-between mb-6">
+              <div className="lg:col-span-2 rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 bg-white">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
                   <div className="h-6 w-32 rounded bg-gray-800" />
                   <div className="flex gap-2">
                     <div className="h-8 w-20 rounded" style={{ background: colorMap.accent, opacity: 0.3 }} />
@@ -375,39 +375,39 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
                     return (
                       <div
                         key={i}
-                        className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition group"
+                        className="flex items-center justify-between p-3 sm:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition group"
                       >
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="relative">
-                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold" style={{ background: badgeColor }}>
+                        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                          <div className="relative flex-shrink-0">
+                            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold" style={{ background: badgeColor }}>
                               {['JD', 'SM', 'RK', 'AM', 'PT', 'LM'][i]}
                             </div>
-                            <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white" style={{ background: statusColors[i % statusColors.length] }} />
+                            <div className="absolute -bottom-1 -right-1 h-3 w-3 sm:h-4 sm:w-4 rounded-full border-2 border-white" style={{ background: statusColors[i % statusColors.length] }} />
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <div className="h-4 w-28 rounded bg-gray-800" />
-                              <div className="px-2.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: badgeColor }}>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                              <div className="h-3 sm:h-4 w-20 sm:w-28 rounded bg-gray-800" />
+                              <div className="px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: badgeColor }}>
                                 {['PRO', 'BASIC', 'ENTERPRISE', 'ADVANCED', 'PRO', 'BASIC'][i]}
                               </div>
                               {i < 2 && (
-                                <div className="px-2 py-0.5 rounded text-xs font-medium" style={{ background: colorMap.success, color: 'white', opacity: 0.9 }}>
+                                <div className="px-1.5 sm:px-2 py-0.5 rounded text-xs font-medium" style={{ background: colorMap.success, color: 'white', opacity: 0.9 }}>
                                   New
                                 </div>
                               )}
                             </div>
-                            <div className="h-3 w-36 rounded bg-gray-300 mb-1" />
+                            <div className="h-3 w-28 sm:w-36 rounded bg-gray-300 mb-1" />
                             <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full" style={{ background: badgeColor, opacity: 0.6 }} />
-                              <div className="h-2 w-20 rounded bg-gray-200" />
+                              <div className="h-2 w-16 sm:w-20 rounded bg-gray-200" />
                             </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="h-5 w-24 rounded mb-1.5 font-semibold" style={{ background: statusColors[i % statusColors.length], color: 'white', padding: '2px 8px', display: 'inline-block', fontSize: '12px' }}>
+                        <div className="text-right flex-shrink-0 ml-2">
+                          <div className="h-5 w-20 sm:w-24 rounded mb-1.5 font-semibold" style={{ background: statusColors[i % statusColors.length], color: 'white', padding: '2px 6px', display: 'inline-block', fontSize: '11px' }}>
                             ${['299', '99', '599', '199', '299', '99'][i]}
                           </div>
-                          <div className="h-3 w-20 rounded bg-gray-200" />
+                          <div className="h-3 w-16 sm:w-20 rounded bg-gray-200" />
                         </div>
                       </div>
                     );
@@ -426,20 +426,21 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
           <div className="flex-1 overflow-y-auto bg-white">
             {/* Header */}
             <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-              <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
                 {/* Logo */}
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg" style={{ background: colors[0] }} />
-                  <div className="h-6 w-32 rounded bg-gray-900" />
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg" style={{ background: colors[0] }} />
+                  <div className="h-5 sm:h-6 w-24 sm:w-32 rounded bg-gray-900" />
                 </div>
                 
                 {/* Navigation */}
-                <nav className="hidden md:flex items-center gap-6">
-                  <div className="h-4 w-20 rounded bg-gray-300" />
-                  <button className="px-4 py-2 rounded-lg border text-sm font-medium hover:opacity-80 transition" style={{ borderColor: colorMap.accent, color: colorMap.accent }}>
-                    Explore Course List
+                <nav className="hidden md:flex items-center gap-4 lg:gap-6">
+                  <div className="h-4 w-16 lg:w-20 rounded bg-gray-300" />
+                  <button className="px-3 lg:px-4 py-2 rounded-lg border text-xs lg:text-sm font-medium hover:opacity-80 transition" style={{ borderColor: colorMap.accent, color: colorMap.accent }}>
+                    <span className="hidden lg:inline">Explore Course List</span>
+                    <span className="lg:hidden">Explore</span>
                   </button>
-                  <button className="px-6 py-2 rounded-lg text-sm font-semibold text-white hover:opacity-90 transition shadow-lg" style={{ background: colors[0] }}>
+                  <button className="px-4 lg:px-6 py-2 rounded-lg text-xs lg:text-sm font-semibold text-white hover:opacity-90 transition shadow-lg" style={{ background: colors[0] }}>
                     Enroll Now
                   </button>
                 </nav>
@@ -448,11 +449,11 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
 
             {/* Hero Section */}
             <section className="relative bg-white overflow-hidden">
-              <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
                   {/* Left Column - Content */}
                   <div>
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 leading-tight">
                       <span className="text-gray-900">Unleash Your </span>
                       <span style={{ color: colors[2] }}>Creativity</span>
                       <br />
@@ -461,12 +462,12 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
                       <span className="text-gray-900"> Courses</span>
                     </h1>
                     
-                    <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
+                    <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed">
                       Elevate your design skills to new heights with our curated selection of courses, designed to inspire, educate, and empower your creative journey.
                     </p>
                     
                     {/* Statistics */}
-                    <div className="grid grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                       <div>
                         <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: colorMap.accent }}>
                           300+
@@ -488,18 +489,18 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
                     </div>
                     
                     {/* CTA Buttons */}
-                    <div className="flex gap-4 flex-wrap">
-                      <button className="px-8 py-4 rounded-lg font-semibold text-white shadow-xl hover:scale-105 transition-transform" style={{ background: colors[0] }}>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 flex-wrap">
+                      <button className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-semibold text-white shadow-xl hover:scale-105 transition-transform" style={{ background: colors[0] }}>
                         Start Learning
                       </button>
-                      <button className="px-8 py-4 rounded-lg font-semibold border-2 hover:scale-105 transition-transform" style={{ borderColor: colorMap.accent, color: colorMap.accent }}>
+                      <button className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-semibold border-2 hover:scale-105 transition-transform" style={{ borderColor: colorMap.accent, color: colorMap.accent }}>
                         Browse Courses
                       </button>
                     </div>
                   </div>
                   
                   {/* Right Column - Geometric Graphics */}
-                  <div className="relative h-[500px] lg:h-[600px]">
+                  <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px]">
                     {/* Abstract Geometric Shapes */}
                     <div className="absolute inset-0">
                       {/* Large rotated D shape - dark */}

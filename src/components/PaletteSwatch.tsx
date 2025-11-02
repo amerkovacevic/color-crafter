@@ -13,6 +13,7 @@ type PaletteSwatchProps = {
   onDelete: (index: number) => void;
   onInsert: (index: number) => void;
   onHexChange: (id: string, hex: string) => void;
+  maxSwatchesReached?: boolean;
 };
 
 export function PaletteSwatch({
@@ -24,7 +25,8 @@ export function PaletteSwatch({
   onCopy,
   onDelete,
   onInsert,
-  onHexChange
+  onHexChange,
+  maxSwatchesReached = false
 }: PaletteSwatchProps) {
   const [editingHex, setEditingHex] = useState(color.hex);
   const textColor = getReadableTextColor(color.hex);
@@ -88,15 +90,17 @@ export function PaletteSwatch({
             </label>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => onInsert(index)}
-              className="grid h-12 w-12 place-items-center rounded-full border-2 bg-white/15 backdrop-blur-md text-lg font-semibold shadow-lg transition-all duration-200 hover:scale-110 hover:bg-white/25 hover:shadow-xl"
-              style={{ color: textColor, borderColor: `${textColor}60` }}
-              aria-label="Insert swatch after"
-            >
-              ➕
-            </button>
+            {!maxSwatchesReached && (
+              <button
+                type="button"
+                onClick={() => onInsert(index)}
+                className="grid h-12 w-12 place-items-center rounded-full border-2 bg-white/15 backdrop-blur-md text-lg font-semibold shadow-lg transition-all duration-200 hover:scale-110 hover:bg-white/25 hover:shadow-xl"
+                style={{ color: textColor, borderColor: `${textColor}60` }}
+                aria-label="Insert swatch after"
+              >
+                ➕
+              </button>
+            )}
             <button
               type="button"
               onClick={() => onDelete(index)}

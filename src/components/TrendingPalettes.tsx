@@ -23,6 +23,36 @@ function createPaletteFromHexes(hexes: string[]): PaletteColor[] {
   return hexes.map((hex) => ({ id: createColorId(), hex: normalizeHex(hex), locked: false }));
 }
 
+function formatSubmitterName(fullName: string): string {
+  if (!fullName || fullName === 'Anonymous') {
+    return 'Anonymous';
+  }
+  
+  // Handle email addresses - return as is or extract name part
+  if (fullName.includes('@')) {
+    const emailParts = fullName.split('@')[0].split('.');
+    if (emailParts.length >= 2) {
+      const firstName = emailParts[0];
+      const lastName = emailParts[emailParts.length - 1];
+      return `${firstName.charAt(0).toUpperCase() + firstName.slice(1)} ${lastName.charAt(0).toUpperCase()}.`;
+    }
+    return fullName;
+  }
+  
+  // Split name by spaces
+  const nameParts = fullName.trim().split(/\s+/);
+  
+  if (nameParts.length === 1) {
+    // Only one name provided, return as is
+    return nameParts[0];
+  }
+  
+  // First name + last initial
+  const firstName = nameParts[0];
+  const lastName = nameParts[nameParts.length - 1];
+  return `${firstName} ${lastName.charAt(0).toUpperCase()}.`;
+}
+
 export type SharedPalette = {
   id: string;
   name: string;
@@ -264,6 +294,9 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
                             <h3 className="font-semibold text-white">{palette.name}</h3>
+                            <p className="mt-1 text-xs text-slate-400">
+                              by {formatSubmitterName(palette.userName)}
+                            </p>
                           </div>
                           {user && palette.userId === user.uid && (
                             <button
