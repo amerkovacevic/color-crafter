@@ -4,11 +4,10 @@
 
 :root {
   color-scheme: dark;
-  font-family: 'Inter', system-ui, sans-serif;
 }
 
 body {
-  @apply bg-primary-800 text-accent-50 min-h-screen;
+  @apply bg-primary-800 text-accent-50 font-sans min-h-screen;
 }
 
 a {
