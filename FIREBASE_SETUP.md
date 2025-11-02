@@ -74,11 +74,21 @@ The app queries palettes by `userId` and orders by `createdAt`. Firestore requir
 
 **Note:** This app uses the collection name `colorCrafter_palettes` to avoid conflicts with other apps in the same Firebase project.
 
-### Automatic (Recommended)
+### Option A: Deploy Index via Firebase CLI (Recommended)
+
+The project includes a `firestore.indexes.json` file that defines the required index. Deploy it with:
+
+```bash
+firebase deploy --only firestore:indexes
+```
+
+This will automatically create the index in your Firebase project. Wait 2-5 minutes for it to build.
+
+### Option B: Automatic Link from Console
 
 When you first use the app and try to load palettes, Firestore will show an error with a link to create the index. Click that link and create the index.
 
-### Manual
+### Option C: Manual Creation
 
 1. Go to **Firestore Database** → **Indexes** tab
 2. Click **Create Index**
@@ -88,6 +98,7 @@ When you first use the app and try to load palettes, Firestore will show an erro
      - `userId` (Ascending)
      - `createdAt` (Descending)
 4. Click **Create**
+5. Wait 2-5 minutes for the index to build (status will change from "Building" to "Enabled")
 
 ## Step 8: Test the Setup
 

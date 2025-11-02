@@ -234,10 +234,11 @@ function App() {
       setTagInput('');
       setCopySuccess('Palette saved ✨');
       setTimeout(() => setCopySuccess(null), 1600);
-    } catch (error) {
-      console.error(error);
-      setCopySuccess('Unable to save palette');
-      setTimeout(() => setCopySuccess(null), 1600);
+    } catch (error: any) {
+      console.error('Save palette error:', error);
+      const errorMessage = error?.message || 'Unable to save palette';
+      setCopySuccess(errorMessage);
+      setTimeout(() => setCopySuccess(null), 4000);
     }
   };
 

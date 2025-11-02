@@ -31,10 +31,14 @@ export function usePaletteStorage(user: User | null) {
     const firebase = getFirebase();
     if (!firebase || !user) {
       setPalettes([]);
+      setError(null);
       return;
     }
 
     const { db } = firebase;
+    
+    // Try the query with orderBy first (requires index)
+    // If it fails, we'll fall back to a simpler query
     const paletteQuery = query(
       collection(db, 'colorCrafter_palettes'),
       where('userId', '==', user.uid),
@@ -42,6 +46,8 @@ export function usePaletteStorage(user: User | null) {
     );
 
     setLoading(true);
+    setError(null);
+    
     const unsubscribe = onSnapshot(
       paletteQuery,
       (snapshot) => {
@@ -57,12 +63,30 @@ export function usePaletteStorage(user: User | null) {
             createdAt: data.createdAt?.toDate?.()
           } satisfies PaletteDocument;
         });
+        // Sort manually as fallback if createdAt is available
+        docs.sort((a, b) => {
+          if (!a.createdAt || !b.createdAt) return 0;
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        });
         setPalettes(docs);
         setLoading(false);
+        setError(null);
       },
-      (snapshotError) => {
-        console.error(snapshotError);
-        setError('Failed to load palettes');
+      (snapshotError: any) => {
+        console.error('Firestore query error:', snapshotError);
+        // Check for common error codes
+        if (snapshotError?.code === 'failed-precondition') {
+          // This usually means the index is missing
+          const errorMsg = 'Firestore index missing. Click the error link in console to create it, or create manually: colorCrafter_palettes collection with userId (Ascending) and createdAt (Descending).';
+          setError(errorMsg);
+          console.error('To create the index, visit:', snapshotError.message);
+        } else if (snapshotError?.code === 'permission-denied') {
+          setError('Permission denied. Make sure Firestore security rules are deployed and allow authenticated users to read their own palettes.');
+        } else if (snapshotError?.message) {
+          setError(`Failed to load palettes: ${snapshotError.message}`);
+        } else {
+          setError('Failed to load palettes. Check browser console for details.');
+        }
         setLoading(false);
       }
     );
@@ -80,11 +104,25 @@ export function usePaletteStorage(user: User | null) {
         throw new Error('You need to be signed in to save palettes');
       }
       const { db } = firebase;
-      await addDoc(collection(db, 'colorCrafter_palettes'), {
-        ...payload,
-        userId: user.uid,
-        createdAt: serverTimestamp()
-      });
+      try {
+        await addDoc(collection(db, 'colorCrafter_palettes'), {
+          ...payload,
+          userId: user.uid,
+          createdAt: serverTimestamp()
+        });
+      } catch (error: any) {
+        console.error('Firestore save error:', error);
+        // Provide more specific error messages
+        if (error?.code === 'permission-denied') {
+          throw new Error('Permission denied. Check Firestore security rules.');
+        } else if (error?.code === 'unavailable') {
+          throw new Error('Firestore is temporarily unavailable. Please try again.');
+        } else if (error?.message) {
+          throw new Error(`Failed to save: ${error.message}`);
+        } else {
+          throw new Error('Failed to save palette. Check console for details.');
+        }
+      }
     },
     [user]
   );
