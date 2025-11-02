@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { User } from 'firebase/auth';
 import { PaletteSwatch } from './components/PaletteSwatch';
 import { TrendingPalettes } from './components/TrendingPalettes';
+import { CraftVisualizer } from './components/CraftVisualizer';
 import {
   createColorId,
   normalizeHex,
@@ -10,7 +11,7 @@ import {
 import { googleSignIn, listenToAuth, logOut, getFirebase } from './lib/firebase';
 import type { ColorInfoMode, PaletteColor } from './types';
 import { usePaletteStorage } from './hooks/usePaletteStorage';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 
 const DEFAULT_HEXES = ['#0f172a', '#0f766e', '#14b8a6', '#38bdf8', '#f472b6'];
 
@@ -60,7 +61,7 @@ function App() {
   const [projectName, setProjectName] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [generatorBusy, setGeneratorBusy] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'generator' | 'trending'>('generator');
+  const [currentPage, setCurrentPage] = useState<'generator' | 'trending' | 'visualizer'>('generator');
 
   useEffect(() => {
     return listenToAuth(setUser);
@@ -198,9 +199,25 @@ function App() {
 
     try {
       const { db } = firebase;
+      const paletteColors = palette.map((color) => color.hex);
+      
+      // Check if user has already shared this exact palette (same colors)
+      const existingQuery = query(
+        collection(db, 'colorCrafter_sharedPalettes'),
+        where('userId', '==', user.uid),
+        where('colors', '==', paletteColors)
+      );
+      
+      const existingDocs = await getDocs(existingQuery);
+      if (!existingDocs.empty) {
+        setCopySuccess('You have already shared this palette');
+        setTimeout(() => setCopySuccess(null), 3000);
+        return;
+      }
+
       await addDoc(collection(db, 'colorCrafter_sharedPalettes'), {
         name: paletteName || 'Untitled Harmony',
-        colors: palette.map((color) => color.hex),
+        colors: paletteColors,
         userId: user.uid,
         userName: user.displayName || user.email || 'Anonymous',
         userPhotoURL: user.photoURL || undefined,
@@ -261,6 +278,17 @@ function App() {
             >
               Trending
             </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage('visualizer')}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                currentPage === 'visualizer'
+                  ? 'bg-teal-500/20 text-teal-300'
+                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              Visualizer
+            </button>
           </nav>
           <div className="flex items-center gap-3 text-sm">
             {user ? (
@@ -279,6 +307,8 @@ function App() {
 
       {currentPage === 'trending' ? (
         <TrendingPalettes onLoadPalette={handleLoadPalette} user={user} />
+      ) : currentPage === 'visualizer' ? (
+        <CraftVisualizer palette={palette} onPaletteChange={setPalette} />
       ) : (
       <main className="flex flex-1 flex-col">
         <section className="flex flex-1 flex-col">
@@ -407,6 +437,10 @@ function App() {
                             // Load saved palette
                             const loadedPalette = createPaletteFromHexes(saved.colors);
                             setPalette(loadedPalette);
+                            // Populate name, project, and tags from saved palette
+                            setPaletteName(saved.name);
+                            setProjectName(saved.project || '');
+                            setTagInput(saved.tags.join(', '));
                             // Scroll to top to show the palette
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}

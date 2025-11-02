@@ -8,9 +8,12 @@ import {
   orderBy,
   doc,
   updateDoc,
+  deleteDoc,
   arrayUnion,
   arrayRemove,
   getDoc,
+  where,
+  getDocs,
   serverTimestamp
 } from 'firebase/firestore';
 import { createColorId, normalizeHex } from '../lib/color-utils';
@@ -174,6 +177,33 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
     [user]
   );
 
+  const handleDeletePalette = useCallback(
+    async (paletteId: string) => {
+      if (!user) {
+        alert('Please sign in to delete palettes');
+        return;
+      }
+
+      if (!confirm('Are you sure you want to delete this shared palette?')) {
+        return;
+      }
+
+      const firebase = getFirebase();
+      if (!firebase) return;
+
+      const { db } = firebase;
+      const paletteRef = doc(db, 'colorCrafter_sharedPalettes', paletteId);
+
+      try {
+        await deleteDoc(paletteRef);
+      } catch (error) {
+        console.error('Error deleting palette:', error);
+        alert('Failed to delete palette. Please try again.');
+      }
+    },
+    [user]
+  );
+
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
@@ -231,16 +261,23 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
                       onClick={() => onLoadPalette(palette.colors)}
                     >
                       <div className="mb-4">
-                        <h3 className="font-semibold text-white">{palette.name}</h3>
-                        <div className="mt-2 flex items-center gap-2">
-                          {palette.userPhotoURL ? (
-                            <img
-                              src={palette.userPhotoURL}
-                              alt={palette.userName}
-                              className="h-6 w-6 rounded-full"
-                            />
-                          ) : null}
-                          <span className="text-xs text-slate-400">{palette.userName}</span>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-white">{palette.name}</h3>
+                          </div>
+                          {user && palette.userId === user.uid && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeletePalette(palette.id);
+                              }}
+                              className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-medium text-rose-300 transition hover:bg-rose-500/30"
+                              title="Delete your palette"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </div>
 
@@ -248,10 +285,15 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
                         {palette.colors.map((hex, index) => (
                           <div
                             key={`${palette.id}-${index}`}
-                            className="flex-1 aspect-square"
+                            className="group/swatch relative flex-1 aspect-square transition-all duration-300 hover:flex-[2] hover:z-10 overflow-hidden"
                             style={{ background: hex }}
-                            title={hex}
-                          />
+                          >
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/swatch:opacity-100 transition-opacity duration-300 bg-black/30">
+                              <span className="text-xs font-semibold text-white uppercase tracking-wider drop-shadow-lg">
+                                {hex}
+                              </span>
+                            </div>
+                          </div>
                         ))}
                       </div>
 

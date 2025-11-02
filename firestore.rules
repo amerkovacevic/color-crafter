@@ -36,14 +36,19 @@ service cloud.firestore {
                     && request.resource.data.userName is string;
       
       // Allow authenticated users to update (for voting)
+      // Users can only update voting-related fields to prevent data tampering
       allow update: if request.auth != null
-                    && (request.resource.data.upvotedBy is list
-                        && request.resource.data.downvotedBy is list
-                        && request.resource.data.upvotes is int
-                        && request.resource.data.downvotes is int);
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.userName == resource.data.userName
+                    && request.resource.data.colors == resource.data.colors
+                    && request.resource.data.name == resource.data.name
+                    && request.resource.data.upvotedBy is list
+                    && request.resource.data.downvotedBy is list
+                    && request.resource.data.upvotes is int
+                    && request.resource.data.downvotes is int;
       
-      // Don't allow delete (shared palettes are permanent)
-      allow delete: if false;
+      // Allow delete only if the user owns the palette
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
     
     // Deny access to all other collections by default (for Color Crafter's safety)

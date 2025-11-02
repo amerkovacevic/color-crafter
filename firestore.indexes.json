@@ -13,6 +13,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "colorCrafter_sharedPalettes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "colors",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []
