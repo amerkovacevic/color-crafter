@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Color Crafter app - scoped to colorCrafter_palettes collection only
+    // This ensures these rules don't affect other apps in the same Firebase project
+    
+    // Color Crafter palettes collection - users can only read/write their own palettes
+    match /colorCrafter_palettes/{paletteId} {
+      // Allow read if the user is authenticated and owns the palette
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      
+      // Allow create if the user is authenticated and sets their userId
+      allow create: if request.auth != null 
+                    && request.auth.uid == request.resource.data.userId
+                    && request.resource.data.name is string
+                    && request.resource.data.colors is list
+                    && request.resource.data.mode is string;
+      
+      // Allow update if the user owns the palette
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+      
+      // Allow delete if the user owns the palette
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+    
+    // Deny access to all other collections by default (for Color Crafter's safety)
+    // Other apps in the project will use their own rules
+  }
+}
+

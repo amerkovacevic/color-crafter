@@ -36,7 +36,7 @@ export function usePaletteStorage(user: User | null) {
 
     const { db } = firebase;
     const paletteQuery = query(
-      collection(db, 'palettes'),
+      collection(db, 'colorCrafter_palettes'),
       where('userId', '==', user.uid),
       orderBy('createdAt', 'desc')
     );
@@ -80,7 +80,7 @@ export function usePaletteStorage(user: User | null) {
         throw new Error('You need to be signed in to save palettes');
       }
       const { db } = firebase;
-      await addDoc(collection(db, 'palettes'), {
+      await addDoc(collection(db, 'colorCrafter_palettes'), {
         ...payload,
         userId: user.uid,
         createdAt: serverTimestamp()
@@ -94,7 +94,7 @@ export function usePaletteStorage(user: User | null) {
       const firebase = getFirebase();
       if (!firebase) return;
       const { db } = firebase;
-      await deleteDoc(doc(db, 'palettes', paletteId));
+      await deleteDoc(doc(db, 'colorCrafter_palettes', paletteId));
     },
     []
   );
