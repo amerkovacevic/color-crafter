@@ -8,9 +8,9 @@ export default {
     './src/**/*.{ts,tsx}'
   ],
   theme: {
+    fontFamily: tailwindFonts,
     extend: {
       colors: tailwindColors,
-      fontFamily: tailwindFonts,
       boxShadow: {
         glow: '0 20px 45px -20px rgba(65, 90, 119, 0.45)' // Using tertiary-500 RGB
       }
