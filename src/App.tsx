@@ -282,10 +282,10 @@ function App() {
               <button
                 type="button"
                 onClick={() => handlePageChange('trending')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                className={`rounded-full px-4 py-2 text-sm font-medium transition touch-manipulation ${
                   currentPage === 'trending'
-                    ? 'bg-teal-500/20 text-teal-300'
-                    : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                    ? 'bg-tertiary-500/20 text-tertiary-400'
+                    : 'bg-secondary-700/50 text-quaternary-300 hover:bg-secondary-600/50 active:bg-secondary-600/50'
                 }`}
               >
                 Trending
@@ -293,10 +293,10 @@ function App() {
               <button
                 type="button"
                 onClick={() => handlePageChange('visualizer')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                className={`rounded-full px-4 py-2 text-sm font-medium transition touch-manipulation ${
                   currentPage === 'visualizer'
-                    ? 'bg-teal-500/20 text-teal-300'
-                    : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                    ? 'bg-tertiary-500/20 text-tertiary-400'
+                    : 'bg-secondary-700/50 text-quaternary-300 hover:bg-secondary-600/50 active:bg-secondary-600/50'
                 }`}
               >
                 Visualizer
@@ -358,10 +358,10 @@ function App() {
               <button
                 type="button"
                 onClick={() => handlePageChange('trending')}
-                className={`px-4 py-3 text-left text-sm font-medium transition ${
+                className={`px-4 py-3 text-left text-sm font-medium transition touch-manipulation ${
                   currentPage === 'trending'
-                    ? 'bg-teal-500/20 text-teal-300'
-                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
+                    ? 'bg-tertiary-500/20 text-tertiary-400'
+                    : 'text-quaternary-300 hover:bg-secondary-700/50 hover:text-accent-50 active:bg-secondary-700/50 active:text-accent-50'
                 }`}
               >
                 Trending
@@ -369,10 +369,10 @@ function App() {
               <button
                 type="button"
                 onClick={() => handlePageChange('visualizer')}
-                className={`px-4 py-3 text-left text-sm font-medium transition ${
+                className={`px-4 py-3 text-left text-sm font-medium transition touch-manipulation ${
                   currentPage === 'visualizer'
-                    ? 'bg-teal-500/20 text-teal-300'
-                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
+                    ? 'bg-tertiary-500/20 text-tertiary-400'
+                    : 'text-quaternary-300 hover:bg-secondary-700/50 hover:text-accent-50 active:bg-secondary-700/50 active:text-accent-50'
                 }`}
               >
                 Visualizer
