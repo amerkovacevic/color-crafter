@@ -59,7 +59,7 @@ function App() {
   const [infoMode, setInfoMode] = useState<ColorInfoMode>(initialState.infoMode);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [paletteName, setPaletteName] = useState('Untitled Harmony');
+  const [paletteName, setPaletteName] = useState('');
   const [projectName, setProjectName] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [generatorBusy, setGeneratorBusy] = useState(false);
@@ -172,13 +172,13 @@ function App() {
   const handleSavePalette = async () => {
     try {
       await savePalette({
-        name: paletteName || 'Untitled Harmony',
+        name: paletteName || 'Untitled Palette',
         project: projectName || undefined,
         tags,
         colors: palette.map((color) => color.hex),
         mode: 'random'
       });
-      setPaletteName('Untitled Harmony');
+      setPaletteName('');
       setProjectName('');
       setTagInput('');
       setCopySuccess('Palette saved ✨');
@@ -223,7 +223,7 @@ function App() {
       }
 
       await addDoc(collection(db, 'colorCrafter_sharedPalettes'), {
-        name: paletteName || 'Untitled Harmony',
+        name: paletteName || 'Untitled Palette',
         colors: paletteColors,
         userId: user.uid,
         userName: user.displayName || user.email || 'Anonymous',
@@ -471,15 +471,12 @@ function App() {
                 <div className="space-y-4 rounded-3xl border border-tertiary-500/30 bg-secondary-700/60 p-6">
                   <h2 className="font-display text-2xl text-accent-50">Save your palette</h2>
                   <div className="grid gap-4">
-                    <label className="text-sm text-quaternary-300">
-                      Palette name
-                      <input
-                        value={paletteName}
-                        onChange={(event) => setPaletteName(event.target.value)}
-                        className="mt-2 w-full rounded-2xl border border-tertiary-600 bg-primary-800/70 px-4 py-3 text-sm text-accent-50 placeholder:text-quaternary-500 focus:border-tertiary-400 focus:outline-none focus:ring-2 focus:ring-tertiary-500/40"
-                        placeholder="Dreamy sunset"
-                      />
-                    </label>
+                    <input
+                      value={paletteName}
+                      onChange={(event) => setPaletteName(event.target.value)}
+                      className="w-full rounded-2xl border border-tertiary-600 bg-primary-800/70 px-4 py-3 text-sm text-accent-50 placeholder:text-quaternary-500 focus:border-tertiary-400 focus:outline-none focus:ring-2 focus:ring-tertiary-500/40"
+                      placeholder="Palette name"
+                    />
                     <label className="text-sm text-quaternary-300">
                       Project (optional)
                       <input
