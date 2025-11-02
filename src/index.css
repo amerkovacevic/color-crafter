@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 min-h-screen;
+}
+
+a {
+  @apply text-teal-300 hover:text-teal-200 transition-colors;
+}
+
+.button-primary {
+  @apply inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-500 px-5 py-2 text-slate-950 font-semibold shadow-glow transition hover:from-teal-300 hover:to-sky-400 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+.button-secondary {
+  @apply inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800/60;
+}

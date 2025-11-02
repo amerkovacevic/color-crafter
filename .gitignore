@@ -1,0 +1,9 @@
+node_modules
+dist
+.dist
+.DS_Store
+.vscode
+.env
+*.log
+coverage
+tsconfig.tsbuildinfo
