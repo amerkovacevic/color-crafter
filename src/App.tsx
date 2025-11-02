@@ -64,6 +64,7 @@ function App() {
   const [tagInput, setTagInput] = useState('');
   const [generatorBusy, setGeneratorBusy] = useState(false);
   const [currentPage, setCurrentPage] = useState<'generator' | 'trending' | 'visualizer'>('generator');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     return listenToAuth(setUser);
@@ -251,63 +252,148 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  const handlePageChange = useCallback((page: 'generator' | 'trending' | 'visualizer') => {
+    setCurrentPage(page);
+    setIsMobileMenuOpen(false);
+  }, []);
+
   const firebaseReady = typeof window !== 'undefined' && Boolean((import.meta as any).env?.VITE_FIREBASE_API_KEY);
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-      <header className="flex h-16 items-center justify-between border-b border-white/10 bg-slate-950/90 px-6 backdrop-blur sm:px-10">
-        <div className="flex items-baseline gap-4">
-          <p className="font-display text-2xl font-semibold tracking-tight text-white">Color Crafter</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <nav className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setCurrentPage('generator')}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                currentPage === 'generator'
-                  ? 'bg-teal-500/20 text-teal-300'
-                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
-              }`}
-            >
-              Generator
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage('trending')}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                currentPage === 'trending'
-                  ? 'bg-teal-500/20 text-teal-300'
-                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
-              }`}
-            >
-              Trending
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage('visualizer')}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                currentPage === 'visualizer'
-                  ? 'bg-teal-500/20 text-teal-300'
-                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
-              }`}
-            >
-              Visualizer
-            </button>
-          </nav>
-          <div className="flex items-center gap-3 text-sm">
-            {user ? (
-              <>
-                <span className="hidden text-slate-300 sm:inline">{user.displayName ?? user.email}</span>
-                <button onClick={logOut} className="button-secondary">Sign out</button>
-              </>
-            ) : (
-              <button onClick={googleSignIn} className="button-primary">
-                Sign in with Google
+      <header className="relative border-b border-white/10 bg-slate-950/90 backdrop-blur">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6 md:px-10">
+          <p className="font-display text-xl sm:text-2xl font-semibold tracking-tight text-white truncate">Color Crafter</p>
+          
+          {/* Desktop Navigation & Auth */}
+          <div className="hidden sm:flex items-center gap-4">
+            <nav className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handlePageChange('generator')}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  currentPage === 'generator'
+                    ? 'bg-teal-500/20 text-teal-300'
+                    : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                }`}
+              >
+                Generator
               </button>
-            )}
+              <button
+                type="button"
+                onClick={() => handlePageChange('trending')}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  currentPage === 'trending'
+                    ? 'bg-teal-500/20 text-teal-300'
+                    : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                }`}
+              >
+                Trending
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePageChange('visualizer')}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  currentPage === 'visualizer'
+                    ? 'bg-teal-500/20 text-teal-300'
+                    : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                }`}
+              >
+                Visualizer
+              </button>
+            </nav>
+            <div className="flex items-center gap-3 text-sm">
+              {user ? (
+                <>
+                  <span className="text-slate-300">{user.displayName ?? user.email}</span>
+                  <button onClick={logOut} className="button-secondary">Sign out</button>
+                </>
+              ) : (
+                <button onClick={googleSignIn} className="button-primary">
+                  Sign in with Google
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="sm:hidden p-2 rounded-lg text-white hover:bg-slate-800/50 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {isMobileMenuOpen ? (
+                <path d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="sm:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur">
+            <nav className="flex flex-col py-2">
+              <button
+                type="button"
+                onClick={() => handlePageChange('generator')}
+                className={`px-4 py-3 text-left text-sm font-medium transition ${
+                  currentPage === 'generator'
+                    ? 'bg-teal-500/20 text-teal-300'
+                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
+                }`}
+              >
+                Generator
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePageChange('trending')}
+                className={`px-4 py-3 text-left text-sm font-medium transition ${
+                  currentPage === 'trending'
+                    ? 'bg-teal-500/20 text-teal-300'
+                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
+                }`}
+              >
+                Trending
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePageChange('visualizer')}
+                className={`px-4 py-3 text-left text-sm font-medium transition ${
+                  currentPage === 'visualizer'
+                    ? 'bg-teal-500/20 text-teal-300'
+                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
+                }`}
+              >
+                Visualizer
+              </button>
+            </nav>
+            <div className="border-t border-white/10 px-4 py-3">
+              {user ? (
+                <div className="space-y-3">
+                  <div className="text-sm text-slate-300 truncate">{user.displayName ?? user.email}</div>
+                  <button onClick={logOut} className="w-full button-secondary text-sm">
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <button onClick={googleSignIn} className="w-full button-primary text-sm">
+                  Sign in with Google
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
       {currentPage === 'trending' ? (

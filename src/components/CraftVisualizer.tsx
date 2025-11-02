@@ -78,12 +78,12 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
-      <div className="flex h-16 items-center justify-between border-b border-white/10 bg-slate-950/90 px-4 sm:px-6 lg:px-10 backdrop-blur">
-        <p className="font-display text-lg sm:text-xl lg:text-2xl font-semibold tracking-tight text-white truncate">Craft Visualizer</p>
-        <div className="flex gap-1 sm:gap-2 bg-slate-800/50 p-1 rounded-lg">
+      <div className="flex flex-col sm:flex-row h-auto sm:h-16 items-stretch sm:items-center justify-between border-b border-white/10 bg-slate-950/90 px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-0 backdrop-blur gap-2 sm:gap-0">
+        <p className="hidden sm:block font-display text-base sm:text-lg md:text-xl lg:text-2xl font-semibold tracking-tight text-white truncate">Craft Visualizer</p>
+        <div className="flex gap-1.5 sm:gap-2 bg-slate-800/50 p-1 rounded-lg overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setActiveView('dashboard')}
-            className={`px-2 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+            className={`px-3 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
               activeView === 'dashboard'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-300 hover:text-white'
@@ -93,7 +93,7 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
           </button>
           <button
             onClick={() => setActiveView('learning')}
-            className={`px-2 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+            className={`px-3 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
               activeView === 'learning'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-300 hover:text-white'
@@ -103,7 +103,7 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
           </button>
           <button
             onClick={() => setActiveView('mobile')}
-            className={`px-2 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all ${
+            className={`px-3 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
               activeView === 'mobile'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-300 hover:text-white'
@@ -115,14 +115,14 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
       </div>
 
       {/* Floating Generate Button & Palette Viewer */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3">
+      <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-2 sm:gap-3">
         {showPaletteViewer && (
-          <div className="rounded-2xl border border-white/20 bg-slate-900/95 backdrop-blur-md p-4 shadow-2xl">
-            <div className="flex gap-2 mb-3">
+          <div className="rounded-2xl border border-white/20 bg-slate-900/95 backdrop-blur-md p-3 sm:p-4 shadow-2xl max-w-[calc(100vw-2rem)] sm:max-w-none">
+            <div className="flex flex-wrap gap-2 sm:gap-2 mb-3 max-h-[200px] sm:max-h-none overflow-y-auto">
               {colors.map((hex, index) => (
                 <div
                   key={index}
-                  className="w-12 h-12 rounded-lg border-2 border-white/20 cursor-pointer transition-transform hover:scale-110"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 border-white/20 cursor-pointer transition-transform hover:scale-110 active:scale-95 flex-shrink-0"
                   style={{ background: hex }}
                   onClick={() => {
                     // Cycle to next color in palette
@@ -142,7 +142,7 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
             </div>
             <button
               onClick={() => setShowPaletteViewer(false)}
-              className="w-full px-4 py-2 text-sm font-medium rounded-lg bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 transition"
+              className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 transition active:scale-95"
             >
               Close
             </button>
@@ -150,16 +150,16 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
         )}
         <button
           onClick={() => setShowPaletteViewer(!showPaletteViewer)}
-          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl transition-all hover:scale-110 hover:shadow-teal-500/50"
-          style={{ background: colorMap.primary }}
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl transition-all hover:scale-110 active:scale-95 hover:shadow-teal-500/50"
+          style={{ background: colorMap.primary, touchAction: 'manipulation' }}
           title="View Palette"
         >
           🎨
         </button>
         <button
           onClick={handleGenerateNew}
-          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl transition-all hover:scale-110 hover:shadow-teal-500/50"
-          style={{ background: colorMap.accent }}
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl transition-all hover:scale-110 active:scale-95 hover:shadow-teal-500/50"
+          style={{ background: colorMap.accent, touchAction: 'manipulation' }}
           title="Generate New Palette"
         >
           ✨
@@ -286,18 +286,18 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
               {/* Color Palette Showcase */}
               <div className="rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 bg-white">
-                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <div className="flex items-center justify-between mb-4 sm:mb-6 flex-wrap gap-2">
                   <div className="h-6 w-32 rounded bg-gray-800" />
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5 sm:gap-1">
                     {colors.map((color, i) => (
-                      <div key={i} className="h-3 w-3 rounded-full" style={{ background: color }} />
+                      <div key={i} className="h-4 w-4 sm:h-3 sm:w-3 rounded-full flex-shrink-0" style={{ background: color }} />
                     ))}
                   </div>
                 </div>
                 
                 {/* Large Color Swatches */}
                 <div className="mb-6">
-                  <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3 mb-4">
                     {colors.map((color, i) => (
                       <div
                         key={i}
@@ -342,8 +342,8 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
                       <div key={i} className="space-y-1.5">
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
-                            <div className="h-3 w-3 rounded-full shadow-sm" style={{ background: color }} />
-                            <div className="h-2 w-16 rounded bg-gray-300" />
+                            <div className="h-4 w-4 sm:h-3 sm:w-3 rounded-full shadow-sm flex-shrink-0" style={{ background: color }} />
+                            <div className="h-2 w-16 sm:w-20 rounded bg-gray-300" />
                           </div>
                           <div className="text-gray-500 font-medium">{percentage}%</div>
                         </div>
