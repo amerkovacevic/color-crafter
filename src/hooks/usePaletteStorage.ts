@@ -1,16 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { User } from 'firebase/auth';
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-  where
-} from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { getFirebase } from '../lib/firebase';
 import type { PaletteDocument, PaletteMode } from '../types';
 
@@ -35,11 +25,8 @@ export function usePaletteStorage(user: User | null) {
     }
 
     const { db } = firebase;
-    const paletteQuery = query(
-      collection(db, 'palettes'),
-      where('userId', '==', user.uid),
-      orderBy('createdAt', 'desc')
-    );
+    const paletteCollection = collection(db, 'users', user.uid, 'apps', 'amer-colorcrafter', 'palettes');
+    const paletteQuery = query(paletteCollection, orderBy('createdAt', 'desc'));
 
     setLoading(true);
     const unsubscribe = onSnapshot(
@@ -80,7 +67,7 @@ export function usePaletteStorage(user: User | null) {
         throw new Error('You need to be signed in to save palettes');
       }
       const { db } = firebase;
-      await addDoc(collection(db, 'palettes'), {
+      await addDoc(collection(db, 'users', user.uid, 'apps', 'amer-colorcrafter', 'palettes'), {
         ...payload,
         userId: user.uid,
         createdAt: serverTimestamp()
@@ -91,12 +78,13 @@ export function usePaletteStorage(user: User | null) {
 
   const deletePaletteById = useCallback(
     async (paletteId: string) => {
+      if (!user) return;
       const firebase = getFirebase();
       if (!firebase) return;
       const { db } = firebase;
-      await deleteDoc(doc(db, 'palettes', paletteId));
+      await deleteDoc(doc(db, 'users', user.uid, 'apps', 'amer-colorcrafter', 'palettes', paletteId));
     },
-    []
+    [user]
   );
 
   return { palettes, savePalette, deletePaletteById, loading, error };

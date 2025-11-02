@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/apps/amer-colorcrafter/palettes/{paletteId} {
+      allow create: if request.auth != null && request.auth.uid == userId && request.resource.data.userId == userId;
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId && resource.data.userId == userId;
+    }
+  }
+}

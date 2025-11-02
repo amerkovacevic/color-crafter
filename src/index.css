@@ -3,16 +3,27 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 body {
-  @apply bg-slate-950 text-slate-100 min-h-screen;
+  @apply min-h-screen bg-white text-slate-900 transition-colors;
+}
+
+.dark body {
+  @apply bg-slate-950 text-slate-100;
 }
 
 a {
-  @apply text-teal-300 hover:text-teal-200 transition-colors;
+  @apply transition-colors text-teal-600 hover:text-teal-500 dark:text-teal-300 dark:hover:text-teal-200;
 }
 
 .button-primary {
@@ -20,5 +31,5 @@ a {
 }
 
 .button-secondary {
-  @apply inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800/60;
+  @apply inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-white/90 dark:border-slate-700/70 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800/60;
 }
