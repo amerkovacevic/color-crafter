@@ -260,10 +260,10 @@ function App() {
   const firebaseReady = typeof window !== 'undefined' && Boolean((import.meta as any).env?.VITE_FIREBASE_API_KEY);
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-      <header className="relative border-b border-white/10 bg-slate-950/90 backdrop-blur">
+    <div className="flex min-h-screen flex-col bg-primary-800 text-accent-50">
+      <header className="relative border-b border-tertiary-500/30 bg-primary-800/90 backdrop-blur">
         <div className="flex h-16 items-center justify-between px-4 sm:px-6 md:px-10">
-          <p className="font-display text-xl sm:text-2xl font-semibold tracking-tight text-white truncate">Color Crafter</p>
+          <p className="font-display text-xl sm:text-2xl font-semibold tracking-tight text-accent-50 truncate">Color Crafter</p>
           
           {/* Desktop Navigation & Auth */}
           <div className="hidden sm:flex items-center gap-4">
@@ -271,10 +271,10 @@ function App() {
               <button
                 type="button"
                 onClick={() => handlePageChange('generator')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                className={`rounded-full px-4 py-2 text-sm font-medium transition touch-manipulation ${
                   currentPage === 'generator'
-                    ? 'bg-teal-500/20 text-teal-300'
-                    : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                    ? 'bg-tertiary-500/20 text-tertiary-400'
+                    : 'bg-secondary-700/50 text-quaternary-300 hover:bg-secondary-600/50 active:bg-secondary-600/50'
                 }`}
               >
                 Generator
@@ -305,7 +305,7 @@ function App() {
             <div className="flex items-center gap-3 text-sm">
               {user ? (
                 <>
-                  <span className="text-slate-300">{user.displayName ?? user.email}</span>
+                  <span className="text-quaternary-300">{user.displayName ?? user.email}</span>
                   <button onClick={logOut} className="button-secondary">Sign out</button>
                 </>
               ) : (
@@ -319,7 +319,7 @@ function App() {
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="sm:hidden p-2 rounded-lg text-white hover:bg-slate-800/50 transition-colors"
+            className="sm:hidden p-2 rounded-lg text-accent-50 hover:bg-secondary-700/50 active:bg-secondary-700/50 transition-colors touch-manipulation"
             aria-label="Toggle menu"
           >
             <svg
@@ -342,15 +342,15 @@ function App() {
 
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
-          <div className="sm:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur">
+          <div className="sm:hidden border-t border-tertiary-500/30 bg-primary-800/95 backdrop-blur">
             <nav className="flex flex-col py-2">
               <button
                 type="button"
                 onClick={() => handlePageChange('generator')}
-                className={`px-4 py-3 text-left text-sm font-medium transition ${
+                className={`px-4 py-3 text-left text-sm font-medium transition touch-manipulation ${
                   currentPage === 'generator'
-                    ? 'bg-teal-500/20 text-teal-300'
-                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
+                    ? 'bg-tertiary-500/20 text-tertiary-400'
+                    : 'text-quaternary-300 hover:bg-secondary-700/50 hover:text-accent-50 active:bg-secondary-700/50 active:text-accent-50'
                 }`}
               >
                 Generator
@@ -378,10 +378,10 @@ function App() {
                 Visualizer
               </button>
             </nav>
-            <div className="border-t border-white/10 px-4 py-3">
+            <div className="border-t border-tertiary-500/30 px-4 py-3">
               {user ? (
                 <div className="space-y-3">
-                  <div className="text-sm text-slate-300 truncate">{user.displayName ?? user.email}</div>
+                  <div className="text-sm text-quaternary-300 truncate">{user.displayName ?? user.email}</div>
                   <button onClick={logOut} className="w-full button-secondary text-sm">
                     Sign out
                   </button>
@@ -424,12 +424,12 @@ function App() {
           </div>
         </section>
 
-        <section className="border-t border-white/10 bg-slate-950/85 px-6 py-10 backdrop-blur">
+        <section className="border-t border-tertiary-500/30 bg-primary-800/85 px-6 py-10 backdrop-blur">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="font-display text-3xl text-white">Generator controls</h2>
-                <p className="text-sm text-slate-300">Lock favourites, remix harmonies, share in a heartbeat.</p>
+                <h2 className="font-display text-3xl text-accent-50">Generator controls</h2>
+                <p className="text-sm text-quaternary-300">Lock favourites, remix harmonies, share in a heartbeat.</p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <button
@@ -445,56 +445,56 @@ function App() {
 
             <div className="grid gap-10 lg:grid-cols-[3fr,2fr]">
               <div className="space-y-8">
-                <p className="text-sm text-slate-300">
+                <p className="text-sm text-quaternary-300">
                   Generate pleasing random colors tuned for balanced palettes. Lock your favorites and regenerate to discover new harmonies.
                 </p>
                 <div>
-                  <h3 className="text-xs uppercase tracking-[0.35em] text-slate-500">Palette summary</h3>
+                  <h3 className="text-xs uppercase tracking-[0.35em] text-quaternary-500">Palette summary</h3>
                   <div className="mt-3 flex items-center gap-3 flex-wrap">
                     <div className="flex gap-1.5">
                       {palette.map((color, index) => (
                         <div
                           key={color.id}
-                          className="w-8 h-8 rounded-lg border-2 border-white/10 shadow-sm flex-shrink-0 cursor-pointer transition-transform hover:scale-110"
+                          className="w-8 h-8 rounded-lg border-2 border-tertiary-500/30 shadow-sm flex-shrink-0 cursor-pointer transition-transform hover:scale-110 touch-manipulation"
                           style={{ background: color.hex }}
                           onClick={() => handleCopy(color.hex)}
                           title={color.hex}
                         />
                       ))}
                     </div>
-                    <p className="text-lg font-medium text-slate-100">{paletteSummary}</p>
+                    <p className="text-lg font-medium text-accent-50">{paletteSummary}</p>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-8">
-                <div className="space-y-4 rounded-3xl border border-white/10 bg-slate-900/60 p-6">
-                  <h2 className="font-display text-2xl text-white">Save your palette</h2>
+                <div className="space-y-4 rounded-3xl border border-tertiary-500/30 bg-secondary-700/60 p-6">
+                  <h2 className="font-display text-2xl text-accent-50">Save your palette</h2>
                   <div className="grid gap-4">
-                    <label className="text-sm text-slate-300">
+                    <label className="text-sm text-quaternary-300">
                       Palette name
                       <input
                         value={paletteName}
                         onChange={(event) => setPaletteName(event.target.value)}
-                        className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-teal-400 focus:outline-none"
+                        className="mt-2 w-full rounded-2xl border border-tertiary-600 bg-primary-800/70 px-4 py-3 text-sm text-accent-50 placeholder:text-quaternary-500 focus:border-tertiary-400 focus:outline-none focus:ring-2 focus:ring-tertiary-500/40"
                         placeholder="Dreamy sunset"
                       />
                     </label>
-                    <label className="text-sm text-slate-300">
+                    <label className="text-sm text-quaternary-300">
                       Project (optional)
                       <input
                         value={projectName}
                         onChange={(event) => setProjectName(event.target.value)}
-                        className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-teal-400 focus:outline-none"
+                        className="mt-2 w-full rounded-2xl border border-tertiary-600 bg-primary-800/70 px-4 py-3 text-sm text-accent-50 placeholder:text-quaternary-500 focus:border-tertiary-400 focus:outline-none focus:ring-2 focus:ring-tertiary-500/40"
                         placeholder="Brand Refresh"
                       />
                     </label>
-                    <label className="text-sm text-slate-300">
+                    <label className="text-sm text-quaternary-300">
                       Tags (comma separated)
                       <input
                         value={tagInput}
                         onChange={(event) => setTagInput(event.target.value)}
-                        className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-teal-400 focus:outline-none"
+                        className="mt-2 w-full rounded-2xl border border-tertiary-600 bg-primary-800/70 px-4 py-3 text-sm text-accent-50 placeholder:text-quaternary-500 focus:border-tertiary-400 focus:outline-none focus:ring-2 focus:ring-tertiary-500/40"
                         placeholder="web, ui, cool"
                       />
                     </label>
@@ -516,20 +516,20 @@ function App() {
                     </button>
                   </div>
                   {!firebaseReady && (
-                    <p className="text-xs text-amber-300">
+                    <p className="text-xs text-warning-300">
                       Firebase configuration missing. Copy <code>.env.example</code> to <code>.env</code> and add your credentials.
                     </p>
                   )}
-                  {savedError && <p className="text-xs text-rose-300">{savedError}</p>}
+                  {savedError && <p className="text-xs text-warning-300">{savedError}</p>}
                 </div>
 
-                <div className="space-y-4 rounded-3xl border border-white/10 bg-slate-900/60 p-6">
+                <div className="space-y-4 rounded-3xl border border-tertiary-500/30 bg-secondary-700/60 p-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-display text-xl text-white">Your library</h3>
-                    {savedLoading && <span className="text-xs text-slate-400">Loading…</span>}
+                    <h3 className="font-display text-xl text-accent-50">Your library</h3>
+                    {savedLoading && <span className="text-xs text-quaternary-400">Loading…</span>}
                   </div>
                   {savedPalettes.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/60 p-6 text-sm text-slate-400">
+                    <div className="rounded-2xl border border-dashed border-tertiary-500/30 bg-primary-800/60 p-6 text-sm text-quaternary-400">
                       Saved palettes will appear here with project and tag filters for quick browsing.
                     </div>
                   ) : (
@@ -537,7 +537,7 @@ function App() {
                       {savedPalettes.map((saved) => (
                         <article
                           key={saved.id}
-                          className="group cursor-pointer rounded-2xl border border-white/10 bg-slate-950/70 p-4 transition hover:border-teal-400/60"
+                          className="group cursor-pointer rounded-2xl border border-tertiary-500/30 bg-primary-800/70 p-4 transition hover:border-tertiary-400/60 active:border-tertiary-400/60"
                           onClick={() => {
                             // Load saved palette
                             const loadedPalette = createPaletteFromHexes(saved.colors);
@@ -552,8 +552,8 @@ function App() {
                         >
                           <div className="flex items-center justify-between gap-4">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-white">{saved.name}</h4>
-                              {saved.project && <p className="text-xs uppercase tracking-wide text-slate-400">{saved.project}</p>}
+                              <h4 className="font-semibold text-accent-50">{saved.name}</h4>
+                              {saved.project && <p className="text-xs uppercase tracking-wide text-quaternary-400">{saved.project}</p>}
                             </div>
                             <button
                               type="button"
@@ -571,16 +571,16 @@ function App() {
                               <span
                                 key={hex}
                                 className="rounded-full px-3 py-1 text-xs font-semibold"
-                                style={{ background: hex, color: '#0f172a' }}
+                                style={{ background: hex, color: '#E0E1DD' }}
                               >
                                 {hex}
                               </span>
                             ))}
                           </div>
                           {saved.tags.length > 0 && (
-                            <div className="mt-3 flex flex-wrap gap-2 text-xs text-teal-200">
+                            <div className="mt-3 flex flex-wrap gap-2 text-xs text-tertiary-300">
                               {saved.tags.map((tag) => (
-                                <span key={tag} className="rounded-full bg-teal-500/10 px-2 py-1 uppercase tracking-wide">
+                                <span key={tag} className="rounded-full bg-tertiary-500/10 px-2 py-1 uppercase tracking-wide">
                                   #{tag}
                                 </span>
                               ))}
@@ -600,13 +600,13 @@ function App() {
 
       {copySuccess && (
         <div className="pointer-events-none fixed inset-x-0 bottom-6 flex justify-center">
-          <div className="rounded-full bg-slate-900/90 px-4 py-2 text-sm font-medium text-white shadow-glow">
+          <div className="rounded-full bg-secondary-700/90 px-4 py-2 text-sm font-medium text-accent-50 shadow-glow">
             {copySuccess}
           </div>
         </div>
       )}
 
-      <footer className="border-t border-slate-800 bg-slate-900/80 py-4 text-center text-xs text-slate-500">
+      <footer className="border-t border-tertiary-500/30 bg-primary-800/80 py-4 text-center text-xs text-quaternary-500">
         <p>&copy; {new Date().getFullYear()} Amer Kovacevic All rights reserved.</p>
       </footer>
     </div>

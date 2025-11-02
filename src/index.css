@@ -8,19 +8,19 @@
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 min-h-screen;
+  @apply bg-primary-800 text-accent-50 min-h-screen;
 }
 
 a {
-  @apply text-teal-300 hover:text-teal-200 transition-colors;
+  @apply text-tertiary-400 hover:text-tertiary-300 transition-colors;
 }
 
 .button-primary {
-  @apply inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-500 px-5 py-2 text-slate-950 font-semibold shadow-glow transition hover:from-teal-300 hover:to-sky-400 disabled:opacity-60 disabled:cursor-not-allowed;
+  @apply inline-flex items-center gap-2 rounded-full bg-tertiary-500 px-5 py-2 text-accent-50 font-semibold shadow-glow transition hover:bg-tertiary-400 active:bg-tertiary-400 disabled:opacity-60 disabled:cursor-not-allowed touch-manipulation;
 }
 
 .button-secondary {
-  @apply inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800/60;
+  @apply inline-flex items-center gap-2 rounded-full border border-tertiary-600 bg-secondary-700/60 px-4 py-2 text-sm font-medium text-accent-50 transition hover:border-tertiary-500 hover:bg-secondary-600/60 active:border-tertiary-500 active:bg-secondary-600/60 touch-manipulation;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

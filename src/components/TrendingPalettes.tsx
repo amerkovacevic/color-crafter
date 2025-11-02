@@ -236,12 +236,12 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-        <div className="flex h-16 items-center justify-center border-b border-white/10">
-          <p className="font-display text-2xl font-semibold tracking-tight text-white">Trending Color Crafts</p>
+      <div className="flex min-h-screen flex-col bg-primary-800 text-accent-50">
+        <div className="flex h-16 items-center justify-center border-b border-tertiary-500/30">
+          <p className="font-display text-2xl font-semibold tracking-tight text-accent-50">Trending Color Crafts</p>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-slate-400">Loading trending palettes...</p>
+          <p className="text-quaternary-400">Loading trending palettes...</p>
         </div>
       </div>
     );
@@ -249,33 +249,33 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
 
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-        <div className="flex h-16 items-center justify-center border-b border-white/10">
-          <p className="font-display text-2xl font-semibold tracking-tight text-white">Trending Color Crafts</p>
+      <div className="flex min-h-screen flex-col bg-primary-800 text-accent-50">
+        <div className="flex h-16 items-center justify-center border-b border-tertiary-500/30">
+          <p className="font-display text-2xl font-semibold tracking-tight text-accent-50">Trending Color Crafts</p>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-rose-400">{error}</p>
+          <p className="text-warning-400">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-      <div className="flex h-16 items-center justify-between border-b border-white/10 bg-slate-950/90 px-6 backdrop-blur sm:px-10">
-        <p className="font-display text-2xl font-semibold tracking-tight text-white">Trending Color Crafts</p>
+    <div className="flex min-h-screen flex-col bg-primary-800 text-accent-50">
+      <div className="flex h-16 items-center justify-between border-b border-tertiary-500/30 bg-primary-800/90 px-6 backdrop-blur sm:px-10">
+        <p className="font-display text-2xl font-semibold tracking-tight text-accent-50">Trending Color Crafts</p>
         {user && (
-          <span className="text-sm text-slate-300">{user.displayName ?? user.email}</span>
+          <span className="text-sm text-quaternary-300">{user.displayName ?? user.email}</span>
         )}
       </div>
 
       <main className="flex flex-1 flex-col">
-        <section className="border-t border-white/10 bg-slate-950/85 px-6 py-10 backdrop-blur">
+        <section className="border-t border-tertiary-500/30 bg-primary-800/85 px-6 py-10 backdrop-blur">
           <div className="mx-auto w-full max-w-6xl">
             {palettes.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/60 p-12 text-center">
-                <p className="text-lg text-slate-400">No shared palettes yet.</p>
-                <p className="mt-2 text-sm text-slate-500">Be the first to share a palette!</p>
+              <div className="rounded-2xl border border-dashed border-tertiary-500/30 bg-primary-800/60 p-12 text-center">
+                <p className="text-lg text-quaternary-400">No shared palettes yet.</p>
+                <p className="mt-2 text-sm text-quaternary-500">Be the first to share a palette!</p>
               </div>
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -287,14 +287,14 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
                   return (
                     <article
                       key={palette.id}
-                      className="group cursor-pointer rounded-2xl border border-white/10 bg-slate-950/70 p-6 transition hover:border-teal-400/60"
+                      className="group cursor-pointer rounded-2xl border border-tertiary-500/30 bg-primary-800/70 p-6 transition hover:border-tertiary-400/60 active:border-tertiary-400/60"
                       onClick={() => onLoadPalette(palette.colors)}
                     >
                       <div className="mb-4">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-white">{palette.name}</h3>
-                            <p className="mt-1 text-xs text-slate-400">
+                            <h3 className="font-semibold text-accent-50">{palette.name}</h3>
+                            <p className="mt-1 text-xs text-quaternary-400">
                               by {formatSubmitterName(palette.userName)}
                             </p>
                           </div>
@@ -305,7 +305,7 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
                                 e.stopPropagation();
                                 handleDeletePalette(palette.id);
                               }}
-                              className="rounded-full bg-rose-500/20 px-3 py-1 text-xs font-medium text-rose-300 transition hover:bg-rose-500/30"
+                              className="rounded-full bg-warning-500/20 px-3 py-1 text-xs font-medium text-warning-300 transition hover:bg-warning-500/30 active:bg-warning-500/30 touch-manipulation"
                               title="Delete your palette"
                             >
                               Delete
@@ -338,10 +338,10 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
                               e.stopPropagation();
                               handleVote(palette.id, 'upvote');
                             }}
-                            className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition ${
+                            className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition touch-manipulation ${
                               hasUpvoted
-                                ? 'bg-teal-500/20 text-teal-300'
-                                : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                                ? 'bg-tertiary-500/20 text-tertiary-400'
+                                : 'bg-secondary-700/50 text-quaternary-300 hover:bg-secondary-600/50 active:bg-secondary-600/50'
                             }`}
                             disabled={!user}
                             title={user ? 'Upvote' : 'Sign in to vote'}
@@ -349,17 +349,17 @@ export function TrendingPalettes({ onLoadPalette, user }: TrendingPalettesProps)
                             <span>▲</span>
                             <span>{palette.upvotes}</span>
                           </button>
-                          <span className="text-sm font-semibold text-slate-300">{netScore}</span>
+                          <span className="text-sm font-semibold text-quaternary-300">{netScore}</span>
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleVote(palette.id, 'downvote');
                             }}
-                            className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition ${
+                            className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition touch-manipulation ${
                               hasDownvoted
-                                ? 'bg-rose-500/20 text-rose-300'
-                                : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                                ? 'bg-warning-500/20 text-warning-300'
+                                : 'bg-secondary-700/50 text-quaternary-300 hover:bg-secondary-600/50 active:bg-secondary-600/50'
                             }`}
                             disabled={!user}
                             title={user ? 'Downvote' : 'Sign in to vote'}
