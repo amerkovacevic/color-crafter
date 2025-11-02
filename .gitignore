@@ -4,6 +4,22 @@ dist
 .DS_Store
 .vscode
 .env
+.env.local
+.env.development
+.env.production
+.env.*
+!.env.example
 *.log
 coverage
 tsconfig.tsbuildinfo
+
+# Firebase service account keys
+service-account*.json
+firebase-adminsdk*.json
+*-service-account*.json
+*serviceAccount*.json
+*.key.json
+
+# Firebase local cache
+.firebase
+.firebaserc.local
