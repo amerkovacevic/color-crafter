@@ -1,4 +1,4 @@
-import { tailwindColors } from '../shared-design-tokens.js';
+import { tailwindColors, tailwindFonts } from '../shared-design-tokens.js';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -9,10 +9,7 @@ export default {
   theme: {
     extend: {
       colors: tailwindColors,
-      fontFamily: {
-        display: ['"Space Grotesk"', 'sans-serif'],
-        body: ['"Inter"', 'sans-serif']
-      },
+      fontFamily: tailwindFonts,
       boxShadow: {
         glow: '0 20px 45px -20px rgba(65, 90, 119, 0.45)' // Using tertiary-500 RGB
       }
