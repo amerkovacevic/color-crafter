@@ -77,16 +77,16 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-primary-800">
-      <div className="flex flex-col sm:flex-row h-auto sm:h-16 items-stretch sm:items-center justify-between border-b border-tertiary-500/30 bg-primary-800/90 px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-0 backdrop-blur gap-2 sm:gap-0">
-        <p className="hidden sm:block font-display text-base sm:text-lg md:text-xl lg:text-2xl font-semibold tracking-tight text-accent-50 truncate">Craft Visualizer</p>
-        <div className="flex gap-1.5 sm:gap-2 bg-secondary-700/50 p-1 rounded-lg overflow-x-auto scrollbar-hide">
+    <div className="flex min-h-screen flex-col bg-accent-50">
+      <div className="flex flex-col sm:flex-row h-auto sm:h-16 items-stretch sm:items-center justify-between border-b border-primary-200 bg-white px-3 sm:px-4 md:px-6 lg:px-10 py-2 sm:py-0 backdrop-blur gap-2 sm:gap-0">
+        <p className="hidden sm:block font-display text-base sm:text-lg md:text-xl lg:text-2xl font-semibold tracking-tight text-primary-900 truncate">Craft Visualizer</p>
+        <div className="flex gap-1.5 sm:gap-2 bg-accent-100 p-1 rounded-lg overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setActiveView('dashboard')}
             className={`px-3 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 touch-manipulation ${
               activeView === 'dashboard'
-                ? 'bg-accent-50 text-primary-800 shadow-sm'
-                : 'text-quaternary-300 hover:text-accent-50 active:text-accent-50'
+                ? 'bg-white text-primary-900 shadow-sm'
+                : 'text-primary-600 hover:text-primary-900 active:text-primary-900'
             }`}
           >
             <span className="hidden sm:inline">CRM </span>Dashboard
@@ -95,8 +95,8 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
             onClick={() => setActiveView('learning')}
             className={`px-3 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 touch-manipulation ${
               activeView === 'learning'
-                ? 'bg-accent-50 text-primary-800 shadow-sm'
-                : 'text-quaternary-300 hover:text-accent-50 active:text-accent-50'
+                ? 'bg-white text-primary-900 shadow-sm'
+                : 'text-primary-600 hover:text-primary-900 active:text-primary-900'
             }`}
           >
             <span className="hidden sm:inline">Learning </span>Academy
@@ -105,8 +105,8 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
             onClick={() => setActiveView('mobile')}
             className={`px-3 sm:px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 touch-manipulation ${
               activeView === 'mobile'
-                ? 'bg-accent-50 text-primary-800 shadow-sm'
-                : 'text-quaternary-300 hover:text-accent-50 active:text-accent-50'
+                ? 'bg-white text-primary-900 shadow-sm'
+                : 'text-primary-600 hover:text-primary-900 active:text-primary-900'
             }`}
           >
             <span className="hidden sm:inline">Mobile </span>App
@@ -117,12 +117,12 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
       {/* Floating Generate Button & Palette Viewer */}
       <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-2 sm:gap-3">
         {showPaletteViewer && (
-          <div className="rounded-2xl border border-tertiary-500/30 bg-secondary-700/95 backdrop-blur-md p-3 sm:p-4 shadow-2xl max-w-[calc(100vw-2rem)] sm:max-w-none">
+          <div className="rounded-2xl border border-primary-200 bg-white backdrop-blur-md p-3 sm:p-4 shadow-2xl max-w-[calc(100vw-2rem)] sm:max-w-none">
             <div className="flex flex-wrap gap-2 sm:gap-2 mb-3 max-h-[200px] sm:max-h-none overflow-y-auto">
               {colors.map((hex, index) => (
                 <div
                   key={index}
-                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 border-white/20 cursor-pointer transition-transform hover:scale-110 active:scale-95 flex-shrink-0"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg border-2 border-primary-300 cursor-pointer transition-transform hover:scale-110 active:scale-95 flex-shrink-0"
                   style={{ background: hex }}
                   onClick={() => {
                     // Cycle to next color in palette
@@ -142,7 +142,7 @@ export function CraftVisualizer({ palette, onPaletteChange }: CraftVisualizerPro
             </div>
             <button
               onClick={() => setShowPaletteViewer(false)}
-              className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-secondary-600/50 text-accent-50 hover:bg-secondary-500/50 active:bg-secondary-500/50 transition active:scale-95 touch-manipulation"
+              className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-accent-100 text-primary-900 hover:bg-accent-200 active:bg-accent-200 transition active:scale-95 touch-manipulation"
             >
               Close
             </button>
